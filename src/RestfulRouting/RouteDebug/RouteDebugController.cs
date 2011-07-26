@@ -39,7 +39,8 @@ namespace RestfulRouting.RouteDebug
             int position = 1;
             foreach (var route in RouteTable.Routes.Select(x => x as Route).Where(x => x != null))
             {
-                var httpMethodConstraint = route.Constraints["httpMethod"] as HttpMethodConstraint;
+				// issue: #33 Fix
+                var httpMethodConstraint = (route.Constraints ?? new RouteValueDictionary())["httpMethod"] as HttpMethodConstraint;
 
                 ICollection<string> allowedMethods = new string[] { };
                 if (httpMethodConstraint != null)
