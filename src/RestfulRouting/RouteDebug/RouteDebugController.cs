@@ -78,7 +78,7 @@ namespace RestfulRouting.RouteDebug
             }
 
             var debugPath = (from p in model.RouteInfos
-                             where p.Endpoint == "routedebug#resources"
+                             where p.Endpoint.Equals("routedebug#resources", StringComparison.InvariantCultureIgnoreCase)
                              select p.Path.Replace("{name}", string.Empty)).FirstOrDefault();
             model.DebugPath = debugPath;
 

@@ -24,8 +24,8 @@ namespace RestfulRouting.Mappers
         private static string GetActionName<TController>(Expression<Func<TController, object>> actionExpression)
         {
             var body = ((MethodCallExpression)actionExpression.Body);
-            var actionName = body.Method.Name.ToLowerInvariant();
-            return actionName;
+            var actionName = body.Method.Name;
+            return RouteSet.LowercaseDefaults ? actionName.ToLowerInvariant() : actionName;
         }
 
         public StandardMapper To<T>(Expression<Func<T, object>> func)

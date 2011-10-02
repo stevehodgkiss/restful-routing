@@ -9,14 +9,14 @@
 
         private void InitializeDefaults()
         {
-            IndexName = "index";
-            ShowName = "show";
-            NewName = "new";
-            CreateName = "create";
-            EditName = "edit";
-            UpdateName = "update";
-            DeleteName = "delete";
-            DestroyName = "destroy";
+            IndexName = "Index";
+            ShowName = "Show";
+            NewName = "New";
+            CreateName = "Create";
+            EditName = "Edit";
+            UpdateName = "Update";
+            DeleteName = "Delete";
+            DestroyName = "Destroy";
         }
 
         public string IndexName { get; set; }

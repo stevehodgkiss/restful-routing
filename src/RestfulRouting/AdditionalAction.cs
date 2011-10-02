@@ -6,48 +6,74 @@ namespace RestfulRouting
 {
     public class AdditionalAction
     {
-        private IDictionary<string, HttpVerbs[]> _actions;
+        private IDictionary<string, KeyValuePair<string, HttpVerbs[]>> _actions;
 
-        public AdditionalAction(IDictionary<string, HttpVerbs[]> actions)
+        public AdditionalAction(IDictionary<string, KeyValuePair<string, HttpVerbs[]>> actions)
         {
             _actions = actions;
         }
 
         public void Get(string action)
         {
-            Route(action, HttpVerbs.Get);
+            Route(action, action, HttpVerbs.Get);
         }
 
         public void Post(string action)
         {
-            Route(action, HttpVerbs.Post);
+            Route(action, action, HttpVerbs.Post);
         }
 
         public void Put(string action)
         {
-            Route(action, HttpVerbs.Put);
+            Route(action, action, HttpVerbs.Put);
         }
 
         public void Delete(string action)
         {
-            Route(action, HttpVerbs.Delete);
+            Route(action, action, HttpVerbs.Delete);
         }
 
         public void Head(string action)
         {
-            Route(action, HttpVerbs.Head);
+            Route(action, action, HttpVerbs.Head);
         }
 
-        private void Route(string action, HttpVerbs verb)
+        public void Get(string resource, string action)
         {
-            var actionName = action.ToLowerInvariant();
+            Route(resource, action, HttpVerbs.Get);
+        }
+
+        public void Post(string resource, string action)
+        {
+            Route(resource, action, HttpVerbs.Post);
+        }
+
+        public void Put(string resource, string action)
+        {
+            Route(resource, action, HttpVerbs.Put);
+        }
+
+        public void Delete(string resource, string action)
+        {
+            Route(resource, action, HttpVerbs.Delete);
+        }
+
+        public void Head(string resource, string action)
+        {
+            Route(resource, action, HttpVerbs.Head);
+        }
+
+        private void Route(string resource, string action, HttpVerbs verb)
+        {
+            var actionName = RouteSet.LowercaseActions ? action.ToLowerInvariant() : action;
             if (!_actions.ContainsKey(action))
-                _actions[actionName] = new[] { verb };
+                _actions[actionName] = new KeyValuePair<string,HttpVerbs[]>(resource, new[] { verb });
             else
             {
-                var verbs = _actions[actionName].ToList();
+                var keyValue = _actions[actionName];
+                var verbs = keyValue.Value.ToList();
                 verbs.Add(verb);
-                _actions[actionName] = verbs.ToArray();
+                _actions[actionName] = new KeyValuePair<string,HttpVerbs[]>(keyValue.Key, verbs.ToArray());
             }
         }
     }

@@ -50,7 +50,7 @@ namespace RestfulRouting.Mappers
 
         public void Only(params string[] actions)
         {
-            var onlyIncludedActions = new Dictionary<string, Func<Route>>();
+            var onlyIncludedActions = new Dictionary<string, Func<Route>>(StringComparer.OrdinalIgnoreCase);
             foreach (var action in actions)
             {
                 onlyIncludedActions.Add(action, IncludedActions[action]);

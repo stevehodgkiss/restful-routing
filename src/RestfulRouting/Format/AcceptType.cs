@@ -28,6 +28,8 @@ namespace RestfulRouting.Format
 
         public override bool Equals(object obj)
         {
+            if (object.ReferenceEquals(obj, null)) return false;
+            if (object.ReferenceEquals(this, obj)) return true;
             var other = (AcceptType) obj;
             return Type.Equals(other.Type);
         }

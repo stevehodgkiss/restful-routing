@@ -15,15 +15,15 @@ namespace RestfulRouting.Spec.Mappers
     {
         public ResourcesMapperBaseTester()
         {
-            base.IncludedActions = new Dictionary<string, Func<Route>>
+            base.IncludedActions = new Dictionary<string, Func<Route>>(StringComparer.OrdinalIgnoreCase)
                                   {
-                                      {Names.IndexName, SomeRoute},
-                                      {Names.CreateName, SomeRoute},
-                                      {Names.NewName, SomeRoute},
-                                      {Names.EditName, SomeRoute},
-                                      {Names.ShowName, SomeRoute},
-                                      {Names.UpdateName, SomeRoute},
-                                      {Names.DestroyName, SomeRoute}
+                                      {Names.IndexName.ToLowerInvariant(), SomeRoute},
+                                      {Names.CreateName.ToLowerInvariant(), SomeRoute},
+                                      {Names.NewName.ToLowerInvariant(), SomeRoute},
+                                      {Names.EditName.ToLowerInvariant(), SomeRoute},
+                                      {Names.ShowName.ToLowerInvariant(), SomeRoute},
+                                      {Names.UpdateName.ToLowerInvariant(), SomeRoute},
+                                      {Names.DestroyName.ToLowerInvariant(), SomeRoute}
                                   };
         }
 
