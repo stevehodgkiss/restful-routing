@@ -55,12 +55,14 @@
   <ItemGroup>
     <Compile Include="Actions.cs" />
     <Compile Include="Exceptions\InvalidRestfulMethodException.cs" />
+    <Compile Include="Exceptions\NotRegisteredFormatException.cs" />
     <Compile Include="Format\AcceptList.cs" />
     <Compile Include="AdditionalAction.cs" />
     <Compile Include="Format\FormatCollection.cs" />
     <Compile Include="Format\FormatResult.cs" />
     <Compile Include="Format\AcceptType.cs" />
     <Compile Include="Format\MimeTypeList.cs" />
+    <Compile Include="Format\ActionResultExposal\ActionResultExposer.cs" />
     <Compile Include="HtmlHelperExtensions.cs" />
     <Compile Include="Inflector.cs" />
     <Compile Include="Mappers\DebugRouteMapper.cs" />

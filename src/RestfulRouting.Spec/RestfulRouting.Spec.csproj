@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>169</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,8 +59,10 @@
     <Compile Include="ActionsSpec.cs" />
     <Compile Include="Format\AcceptListSpec.cs" />
     <Compile Include="AdditionalActionSpec.cs" />
+    <Compile Include="Format\ResultExposal\When_ExposeActionResult_method_called_on_format_result.cs" />
     <Compile Include="Format\FormatResultSpec.cs" />
     <Compile Include="Format\MimeTypeSpec.cs" />
+    <Compile Include="Format\ResultExposal\When_format_collection_has_no_appropriate_action_registered.cs" />
     <Compile Include="InflectorSpec.cs" />
     <Compile Include="MapperSpec.cs" />
     <Compile Include="Mappers\AreaMapperSpec.cs" />
@@ -87,5 +90,6 @@
       <Name>RestfulRouting</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

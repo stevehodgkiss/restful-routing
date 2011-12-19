@@ -2,6 +2,7 @@ using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Linq;
+using RestfulRouting.Format.ActionResultExposal;
 
 namespace RestfulRouting.Format
 {
@@ -24,8 +25,8 @@ namespace RestfulRouting.Format
 
         public override void ExecuteResult(ControllerContext context)
         {
-            _format(_formatCollection);
-            var result = GetResult(_formatCollection, context.RouteData.Values, context.HttpContext.Request.AcceptTypes);
+            _format(this._formatCollection);
+            var result = GetResult(this._formatCollection, context.RouteData.Values, context.HttpContext.Request.AcceptTypes);
             result.ExecuteResult(context);
         }
 
@@ -77,6 +78,23 @@ namespace RestfulRouting.Format
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Exposes the action result for unit testing.
+        /// </summary>
+        /// <returns>
+        /// ActionResultExposer intance to call required actions on.
+        /// </returns>
+        /// <example>
+        ///     FormatResult formatResult = 
+        ///         new FormatResult(format => format.Json = () => new JsonResult());
+        ///     JsonResult jsonResult = (JsonResult)formatResult.ExposeResult().Json();
+        /// </example>
+        public ActionResultExposer ExposeResult()
+        {
+            _format(_formatCollection);
+            return new ActionResultExposer(_formatCollection);
         }
     }
 }
