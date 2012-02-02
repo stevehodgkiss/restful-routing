@@ -191,4 +191,17 @@ namespace RestfulRouting.Spec.Mappers
         It should_be_a_resources_method_exception = () => Exception.ShouldBeOfType<InvalidRestfulMethodException>();
         It should_have_a_descriptive_message = () => Exception.Message.ShouldBe("the controller 'posts' only has methods index, create, new, edit, show, update, destroy.");
     }
+
+	public class when_specifying_only_actions_in_a_random_order : resources_mapper_base
+	{
+		Because of = () => 
+			tester.Only("create", "show", "edit");
+
+		It should_keep_the_order_for_mvc_to_pick_correct_route_and_not_the_random_order_specified = () =>
+		{
+			tester.IncludedActions().Keys.ElementAt(0).ShouldEqual("create");
+			tester.IncludedActions().Keys.ElementAt(1).ShouldEqual("edit");
+			tester.IncludedActions().Keys.ElementAt(2).ShouldEqual("show");
+		};
+	}
 }
