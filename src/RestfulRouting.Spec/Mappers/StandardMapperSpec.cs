@@ -24,4 +24,19 @@ namespace RestfulRouting.Spec.Mappers
         It should_map_posts_post = () => "~/posts/1/hi".WithMethod(HttpVerbs.Get).ShouldMapTo<CommentsController>(x => x.Index(1));
 
     }
+
+	public class standard_mapping_allows_PUT_and_DELETE_verb_overrides : base_context
+	{
+		static StandardMapper standardMapper;
+
+		Establish context = () =>
+			standardMapper = new StandardMapper();
+
+		Because of = () =>
+			standardMapper.Path("posts/{id}").Allow(HttpVerbs.Put);
+
+		It should_use_a_http_method_constraint_that_allows_PUT_as_an_override_in_a_post = () =>
+			standardMapper.Route.Constraints["httpMethod"].ShouldBeOfType<RestfulHttpMethodConstraint>();
+
+	}
 }
