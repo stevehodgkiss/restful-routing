@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -81,7 +82,7 @@ namespace RestfulRouting.Format
                 var attributes = typeAndQuality.Last().Trim().Split('=');
                 if (attributes.Length == 2)
                 {
-                    float.TryParse(attributes.Last(), out quality);
+                    float.TryParse(attributes.Last(), NumberStyles.Float, NumberFormatInfo.InvariantInfo,  out quality);
                 }
             }
             if (new Regex(@"(application|text|image)/\*").IsMatch(acceptType))
