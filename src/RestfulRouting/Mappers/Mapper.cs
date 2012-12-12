@@ -19,7 +19,7 @@ namespace RestfulRouting
         void Area(string name, Action<IAreaMapper> mapper);
         void Area(string name, string pathPrefix, Action<IAreaMapper> mapper);
         StandardMapper Path(string path);
-        void Connect<TRouteSet>(string path = "") where TRouteSet : RouteSet, new();
+        void Connect<TRouteSet>(string path = "", string[] namespaces = null) where TRouteSet : RouteSet, new();
         void WithRouteHandler(IRouteHandler routeHandler);
         void DebugRoute(string path);
     }
@@ -31,6 +31,12 @@ namespace RestfulRouting
         protected IRouteHandler RouteHandler = new MvcRouteHandler();
         protected RouteValueDictionary Constraints = new RouteValueDictionary();
         protected List<string> ResourcePaths = new List<string>();
+        protected string[] Namespaces;
+        
+        public Mapper(string[] namespaces = null)
+        {
+            this.Namespaces = namespaces;
+        }
 
         public void Root<TController>(Expression<Func<TController, object>> action)
         {
@@ -79,9 +85,11 @@ namespace RestfulRouting
             return mapper;
         }
 
-        public virtual void Connect<TRouteSet>(string path = "") where TRouteSet : RouteSet, new()
+        public virtual void Connect<TRouteSet>(string path = "", string[] namespaces = null) where TRouteSet : RouteSet, new()
         {
-            AddMapper(new ConnectMapper<TRouteSet>(path));
+            ConnectMapper<TRouteSet> set = new ConnectMapper<TRouteSet>(path);
+            set.Namespaces = namespaces;
+            AddMapper(set);
         }
 
         public void WithRouteHandler(IRouteHandler routeHandler)
@@ -96,6 +104,8 @@ namespace RestfulRouting
 
         private void AddMapper(Mapper mapper)
         {
+            if (mapper.Namespaces == null)
+                mapper.Namespaces = this.Namespaces;
             Mappers.Add(mapper);
         }
 
@@ -153,6 +163,7 @@ namespace RestfulRouting
             mapper.SetBasePath(BasePath);
             mapper.WithRouteHandler(RouteHandler);
             mapper.InheritConstraints(Constraints);
+            mapper.InheritNamespaces(Namespaces);
         }
 
         private void InheritConstraints(RouteValueDictionary constraints)
@@ -166,6 +177,14 @@ namespace RestfulRouting
             }
         }
 
+        private void InheritNamespaces(string[] namespaces)
+        {
+            if (this.Namespaces == null)
+                this.Namespaces = namespaces;
+            else
+                this.Namespaces = ((string[])this.Namespaces).Concat(namespaces).ToArray<string>();
+        }
+
         protected void ConfigureRoute(Route route)
         {
             if (route.Constraints == null)
@@ -173,6 +192,14 @@ namespace RestfulRouting
             foreach (var constraint in Constraints)
             {
                 route.Constraints[constraint.Key] = constraint.Value;
+            }
+            
+            if (this.Namespaces != null && this.Namespaces.Length > 0)
+            {
+                if (route.DataTokens == null)
+                    route.DataTokens = new RouteValueDictionary();
+                
+                route.DataTokens["Namespaces"] = this.Namespaces;
             }
         }
 

@@ -42,7 +42,7 @@ public static void Start()
 </section> 
 <section id="connect">
 <h2>Connecting RouteSets</h2>
-<p>Sometimes you want to logically seperate your RouteSets. Instead of grouping all routes in a single RouteSet, we provide the ability to connect RouteSets. You must select one RoutSet to be the root of your RouteSets, after which you may connect other RouteSets any way you would like.</p>
+<p>Sometimes you want to logically seperate your RouteSets. Instead of grouping all routes in a single RouteSet, we provide the ability to connect RouteSets. You must select one RoutSet to be the root of your RouteSets, after which you may connect other RouteSets any way you would like. RouteSets also support namespaces, similar to areas.</p>
 
 <pre class="prettyprint linenums">
 public class Routes : RouteSet
@@ -52,6 +52,7 @@ public class Routes : RouteSet
         map.DebugRoute("routedebug");
         map.Connect&lt;One&gt;();
         map.Connect&lt;Two&gt;();
+        map.Connect&lt;APIRoutes&gt;("api", new string[] { "RestfulRouting.Controllers.API" });
     }
 }
 
@@ -68,6 +69,15 @@ public class Two : RouteSet
     public override void Map(IMapper map)
     {
         map.Resources&lt;TwosController&gt;();
+    }
+}
+
+public class APIRoutes : RouteSet
+{
+    public override void Map(IMapper map)
+    {
+        map.Resource&lt;RestfulRouting.Controllers.API.OneController&gt;();
+        map.Resources&lt;RestfulRouting.Controllers.API.TwosController&gt;();
     }
 }
 </pre>

@@ -15,7 +15,7 @@ namespace RestfulRouting.Mappers
         {
             var routes = new RouteCollection();
             var routeSet = new TRouteSet();
-            routeSet.RegisterRoutes(routes);
+            routeSet.RegisterRoutes(routes, Namespaces);
             foreach (var routeBase in routes)
             {
                 var route = routeBase as Route;

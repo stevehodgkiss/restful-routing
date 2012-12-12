@@ -12,9 +12,9 @@ namespace RestfulRouting
 
         public abstract void Map(IMapper map);
 
-        public void RegisterRoutes(RouteCollection routes)
+        public void RegisterRoutes(RouteCollection routes, string[] namespaces = null)
         {
-            var mapper = new Mapper();
+            var mapper = new Mapper(namespaces);
             Map(mapper);
 
             mapper.RegisterRoutes(routes);

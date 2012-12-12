@@ -76,6 +76,11 @@ namespace RestfulRouting.Mappers
         {
             Route.Url = Join(BasePath, Route.Url);
             Route.RouteHandler = RouteHandler;
+            
+            if (Route.DataTokens == null)
+                Route.DataTokens = new RouteValueDictionary();
+            Route.DataTokens["Namespaces"] = this.Namespaces;
+            
             routeCollection.Add(Route);
         }
     }
