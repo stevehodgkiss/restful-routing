@@ -93,6 +93,7 @@ namespace RestfulRouting
             AddUncountable("series");
             AddUncountable("fish");
             AddUncountable("sheep");
+            AddUncountable("staff");
         }
 
         private class Rule
