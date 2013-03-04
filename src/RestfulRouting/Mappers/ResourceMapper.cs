@@ -22,18 +22,38 @@ namespace RestfulRouting.Mappers
             As(SingularResourceName);
             IncludedActions = new Dictionary<string, Func<Route>>(StringComparer.OrdinalIgnoreCase)
                                   {
-                                      {Names.ShowName, () => GenerateNamedRoute(JoinResources(ResourceName), ResourcePath, ControllerName, Names.ShowName, new[] { "GET" })},
-                                      {Names.UpdateName, () => GenerateRoute(ResourcePath, ControllerName, Names.UpdateName, new[] { "PUT" })},
-                                      {Names.NewName, () => GenerateNamedRoute("new_" + JoinResources(ResourceName), ResourcePath + "/" + (RouteSet.LowercaseUrls ? Names.NewName.ToLowerInvariant() : Names.NewName), ControllerName, Names.NewName, new[] { "GET" })},
-                                      {Names.EditName, () => GenerateNamedRoute("edit_" + JoinResources(ResourceName), ResourcePath + "/" + (RouteSet.LowercaseUrls ? Names.EditName.ToLowerInvariant() : Names.EditName), ControllerName, Names.EditName, new[] { "GET" })},
-                                      {Names.DestroyName, () => GenerateRoute(ResourcePath, ControllerName, Names.DestroyName, new[] { "DELETE" })},
-                                      {Names.CreateName, () => GenerateRoute(ResourcePath, ControllerName, Names.CreateName, new[] { "POST" })}
+                                      {Names.ShowName, () => GenerateNamedRoute(JoinResources(ResourceName), BuildPathFor(Paths.Show), ControllerName, Names.ShowName, new[] { "GET" })},
+                                      {Names.UpdateName, () => GenerateRoute(BuildPathFor(Paths.Update), ControllerName, Names.UpdateName, new[] { "PUT" })},
+                                      {Names.NewName, () => GenerateNamedRoute("new_" + JoinResources(ResourceName), BuildPathFor(Paths.New), ControllerName, Names.NewName, new[] { "GET" })},
+                                      {Names.EditName, () => GenerateNamedRoute("edit_" + JoinResources(ResourceName), BuildPathFor(Paths.Edit), ControllerName, Names.EditName, new[] { "GET" })},
+                                      {Names.DestroyName, () => GenerateRoute(BuildPathFor(Paths.Destroy), ControllerName, Names.DestroyName, new[] { "DELETE" })},
+                                      {Names.CreateName, () => GenerateRoute(BuildPathFor(Paths.Create), ControllerName, Names.CreateName, new[] { "POST" })}
                                   };
             if (RouteSet.MapDelete)
             {
-                IncludedActions.Add(Names.DeleteName, () => GenerateNamedRoute("delete_" + JoinResources(ResourceName), ResourcePath + "/" + (RouteSet.LowercaseUrls ? Names.DeleteName.ToLowerInvariant() : Names.DeleteName), ControllerName, Names.DeleteName, new[] { "GET" }));
+                IncludedActions.Add(Names.DeleteName, () => GenerateNamedRoute("delete_" + JoinResources(ResourceName),BuildPathFor(Paths.Delete), ControllerName, Names.DeleteName, new[] { "GET" }));
             }
             _subMapper = subMapper;
+        }
+
+        private string BuildPathFor(string path)
+        {
+            return path.Replace("{resourcePath}", ResourcePath)
+                        .Replace("{indexName}", ProperCaseUrl(Names.IndexName))
+                        .Replace("{showName}", ProperCaseUrl(Names.ShowName))
+                        .Replace("{newName}", ProperCaseUrl(Names.NewName))
+                        .Replace("{createName}", ProperCaseUrl(Names.CreateName))
+                        .Replace("{editName}", ProperCaseUrl(Names.EditName))
+                        .Replace("{updateName}", ProperCaseUrl(Names.UpdateName))
+                        .Replace("{deleteName}", ProperCaseUrl(Names.DeleteName))
+                        .Replace("{destroyName}", ProperCaseUrl(Names.DestroyName));
+        }
+
+        private string ProperCaseUrl(string url)
+        {
+            return RouteSet.LowercaseUrls
+                       ? url.ToLowerInvariant()
+                       : url;
         }
 
         public void Member(Action<AdditionalAction> action)
@@ -80,5 +100,41 @@ namespace RestfulRouting.Mappers
                 RegisterNested(routeCollection, mapper => mapper.SetParentResources(ResourcePaths));
             }
         }
+    }
+
+    public class RoutePaths
+    {
+        public RoutePaths()
+        {
+            InitializeDefaults();
+        }
+
+        private void InitializeDefaults()
+        {
+            Index = "{resourcePath}/{indexName}";
+            Show = "{resourcePath}";
+            New = "{resourcePath}/{newName}";
+            Create = "{resourcePath}";
+            Edit = "{resourcePath}/{editName}";
+            Update = "{resourcePath}";
+            Delete = "{resourcePath}/deleteName";
+            Destroy = "{resourcePath}";
+        }
+
+        public string Index { get; set; }
+
+        public string Show { get; set; }
+
+        public string New { get; set; }
+
+        public string Create { get; set; }
+
+        public string Edit { get; set; }
+
+        public string Update { get; set; }
+
+        public string Delete { get; set; }
+
+        public string Destroy { get; set; }
     }
 }

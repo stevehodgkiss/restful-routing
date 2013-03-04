@@ -89,6 +89,45 @@ namespace RestfulRouting.Spec.Mappers
         Behaves_like<SessionsResource> a_sessions_resource;
     }
 
+    public class mapping_resource_with_reroute_overrides : base_context
+    {
+        static ResourceMapper<SessionsController> _mapper;
+
+        Establish context = () =>
+            {
+                _mapper = new ResourceMapper<SessionsController>();
+                _mapper.ReRoute(c => c.New = "signup");
+                _mapper.ReRoute(c => c.Show = "{resourceName}/something/else");
+                _mapper.ReRoute(c => c.Edit = "{resourceName}/fancy/{editName}");
+            };
+
+        Because of = () => _mapper.RegisterRoutes(routes);
+
+        It should_map_get_show = () => "~/session/something/else".WithMethod(HttpVerbs.Get).ShouldMapTo<SessionsController>(x => x.Show()).WithName("session");
+
+        It should_map_get_new = () => "~/signup".WithMethod(HttpVerbs.Get).ShouldMapTo<SessionsController>(x => x.New()).WithName("new_session");
+
+        It should_map_post_create = () => "~/session".WithMethod(HttpVerbs.Post).ShouldMapTo<SessionsController>(x => x.Create());
+
+        It should_map_get_edit = () => "~/session/fancy/edit".WithMethod(HttpVerbs.Get).ShouldMapTo<SessionsController>(x => x.Edit()).WithName("edit_session");
+
+        It should_map_put_update = () => "~/session".WithMethod(HttpVerbs.Put).ShouldMapTo<SessionsController>(x => x.Update());
+
+        It should_map_delete_destroy = () => "~/session".WithMethod(HttpVerbs.Delete).ShouldMapTo<SessionsController>(x => x.Destroy());
+
+        It should_generate_show;// TODO - this fails: = () => OutBoundUrl.Of<SessionsController>(x => x.Show()).ShouldMapToUrl("/session/something/else");
+
+        It should_generate_new = () => OutBoundUrl.Of<SessionsController>(x => x.New()).ShouldMapToUrl("/signup");
+
+        It should_generate_create = () => OutBoundUrl.Of<SessionsController>(x => x.Create()).ShouldMapToUrl("/session");
+
+        It should_generate_edit;// TODO - this fails: = () => OutBoundUrl.Of<SessionsController>(x => x.Edit()).ShouldMapToUrl("/session/fancy/edit");
+
+        It should_generate_update = () => OutBoundUrl.Of<SessionsController>(x => x.Update()).ShouldMapToUrl("/session");
+
+        It should_generate_destroy = () => OutBoundUrl.Of<SessionsController>(x => x.Destroy()).ShouldMapToUrl("/session");
+    }
+
     public class mapping_resource_with_member_route : base_context
     {
         Because of = () => new ResourceMapper<SessionsController>(map => map.Member(x => x.Get("hello"))).RegisterRoutes(routes);

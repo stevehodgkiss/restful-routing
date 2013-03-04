@@ -14,6 +14,7 @@ namespace RestfulRouting.Mappers
         void Only(params string[] actions);
         void WithFormatRoutes();
         void PathNames(Action<RouteNames> action);
+        void ReRoute(Action<RoutePaths> action);
     }
 
     public class ResourcesMapperBase<TController> : Mapper, IResourcesMapperBase where TController : Controller
@@ -22,6 +23,7 @@ namespace RestfulRouting.Mappers
         protected string ResourcePath;
         protected string ControllerName;
         protected RouteNames Names = new RouteNames();
+        protected RoutePaths Paths = new RoutePaths();
         protected Dictionary<string, Func<Route>> IncludedActions;
         protected bool GenerateFormatRoutes;
         protected string SingularResourceName;
@@ -66,6 +68,11 @@ namespace RestfulRouting.Mappers
         public void PathNames(Action<RouteNames> action)
         {
             action(Names);
+        }
+
+        public void ReRoute(Action<RoutePaths> action)
+        {
+            action(Paths);
         }
 
         private void CalculatePath()
