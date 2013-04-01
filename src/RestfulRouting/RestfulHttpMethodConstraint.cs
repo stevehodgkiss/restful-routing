@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
+using System.Web.Helpers;
 
 namespace RestfulRouting
 {
@@ -21,10 +22,10 @@ namespace RestfulRouting
                         if (String.Equals(method, httpContext.Request.HttpMethod, StringComparison.OrdinalIgnoreCase))
                             return true;
 
-                        if (httpContext.Request.Form == null)
+                        if (httpContext.Request.Unvalidated().Form == null)
                             continue;
 
-                        var overridden = httpContext.Request.Form["_method"] ?? httpContext.Request.Form["X-HTTP-Method-Override"];
+                        var overridden = httpContext.Request.Unvalidated().Form["_method"] ?? httpContext.Request.Unvalidated().Form["X-HTTP-Method-Override"];
                         if (String.Equals(method, overridden, StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
