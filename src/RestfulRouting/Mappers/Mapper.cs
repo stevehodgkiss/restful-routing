@@ -60,22 +60,22 @@ namespace RestfulRouting
 
         public void Area<TController>(string name, Action<IAreaMapper> mapper = null) where TController : Controller
         {
-            AddMapper(new AreaMapper(name, typeof(TController).Namespace, mapper));
+            AddMapper(new AreaMapper(name, null, typeof(TController).Namespace, mapper));
         }
 
         public void Area<TController>(string name, string pathPrefix, Action<IAreaMapper> mapper) where TController : Controller
         {
-            AddMapper(new AreaMapper(name, typeof(TController).Namespace, mapper));
+            AddMapper(new AreaMapper(name, pathPrefix, typeof(TController).Namespace, mapper));
         }
 
         public void Area(string name, Action<IAreaMapper> mapper)
         {
-            AddMapper(new AreaMapper(name, null, mapper));
+            AddMapper(new AreaMapper(name, null, null, mapper));
         }
 
         public void Area(string name, string pathPrefix, Action<IAreaMapper> mapper)
         {
-            AddMapper(new AreaMapper(name, null, mapper));
+            AddMapper(new AreaMapper(name, pathPrefix, null, mapper));
         }
 
         public virtual StandardMapper Path(string path)

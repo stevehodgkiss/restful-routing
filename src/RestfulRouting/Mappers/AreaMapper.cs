@@ -11,12 +11,14 @@ namespace RestfulRouting.Mappers
     public class AreaMapper : Mapper, IAreaMapper
     {
         string _areaName;
+        string _pathPrefix;
         string _ns;
         Action<AreaMapper> _subMapper;
 
-        public AreaMapper(string areaName, string _namespace = null, Action<AreaMapper> subMapper = null)
+        public AreaMapper(string areaName, string pathPrefix = null, string _namespace = null, Action<AreaMapper> subMapper = null)
         {
             _areaName = areaName;
+            _pathPrefix = pathPrefix;
             _ns = _namespace;
             _subMapper = subMapper;
         }
@@ -30,8 +32,8 @@ namespace RestfulRouting.Mappers
 
             var routes = new RouteCollection();
 
-            BasePath = Join(BasePath, _areaName);
-            AddResourcePath(_areaName);
+            BasePath = Join(BasePath, _pathPrefix ?? _areaName);
+            AddResourcePath(_pathPrefix ?? _areaName);
             RegisterNested(routes, mapper => mapper.SetParentResources(ResourcePaths));
 
             foreach (var route in routes.Select(x => (Route)x))
