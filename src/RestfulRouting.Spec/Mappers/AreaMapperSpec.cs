@@ -37,4 +37,28 @@ namespace RestfulRouting.Spec.Mappers
 
         It adds_to_the_resource_path = () => areaMapper.JoinResources("posts").ShouldEqual("top/secret_posts");
     }
+
+    public class nested_area_mapper : base_context
+    {
+        static AreaMapper areaMapper = new AreaMapper("top-area", "top", "TopNamespace", x =>
+        {
+            x.Root<AvatarsController>(avatars => avatars.Show());
+            x.Area<PostsController>("nested-area", "nested", map => map.Root<PostsController>(posts => posts.Index()));
+        });
+
+        static Func<RouteBase, RouteValueDictionary> DataTokens = (RouteBase x) => ((Route)x).DataTokens;
+
+        Because of = () => areaMapper.RegisterRoutes(routes);
+
+        It constrains_the_namespace_for_the_top_route = () => DataTokens(routes[0])["namespaces"].As<string[]>().ShouldContain("TopNamespace");
+        It constrains_the_namespace_for_the_nested_route = () => DataTokens(routes[1])["namespaces"].As<string[]>().ShouldContain(typeof(PostsController).Namespace);
+
+        It uses_the_path_prefix_for_the_top_path = () => "~/top".WithMethod(HttpVerbs.Get).ShouldMapTo<AvatarsController>(x => x.Show());
+        It uses_the_path_prefix_for_the_nested_path = () => "~/top/nested".WithMethod(HttpVerbs.Get).ShouldMapTo<PostsController>(x => x.Index());
+
+        It sets_the_area_for_the_top_route = () => DataTokens(routes[0])["area"].ShouldEqual("top-area");
+        It sets_the_area_for_the_nested_route = () => DataTokens(routes[1])["area"].ShouldEqual("nested-area");
+
+        It adds_to_the_resource_path = () => areaMapper.JoinResources("posts").ShouldEqual("top_nested_posts");
+    }
 }

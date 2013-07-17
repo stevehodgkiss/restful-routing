@@ -47,9 +47,9 @@ namespace RestfulRouting.Mappers
         {
             if (route.DataTokens == null)
                 route.DataTokens = new RouteValueDictionary();
-            if (!string.IsNullOrEmpty(_ns))
+            if (!string.IsNullOrEmpty(_ns) && !route.DataTokens.ContainsKey("area"))
                 route.DataTokens["namespaces"] = new[] { _ns };
-            if (!string.IsNullOrEmpty(_areaName))
+            if (!string.IsNullOrEmpty(_areaName) && !route.DataTokens.ContainsKey("area"))
                 route.DataTokens["area"] = _areaName;
             route.DataTokens["UseNamespaceFallback"] = false;
         }
