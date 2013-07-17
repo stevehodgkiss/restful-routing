@@ -5,6 +5,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Linq;
 using RestfulRouting.Mappers;
+using RestfulRouting.Exceptions;
+using System.Collections;
 
 namespace RestfulRouting
 {
@@ -122,11 +124,11 @@ namespace RestfulRouting
 
         public virtual void RegisterRoutes(RouteCollection routeCollection)
         {
-            foreach (var mapper in Mappers)
+            EnumerateMappers(mapper =>
             {
                 mapper.WithRouteHandler(RouteHandler);
                 mapper.RegisterRoutes(routeCollection);
-            }
+            });
         }
 
         protected string Join(params string[] parts)
@@ -145,7 +147,7 @@ namespace RestfulRouting
 
         protected void RegisterNested(RouteCollection routeCollection, Action<Mapper> action = null)
         {
-            foreach (var mapper in Mappers)
+            EnumerateMappers(mapper =>
             {
                 ConfigureNestedMapper(mapper);
 
@@ -155,6 +157,43 @@ namespace RestfulRouting
                 }
 
                 mapper.RegisterRoutes(routeCollection);
+            });
+        }
+
+        protected void EnumerateMappers(Action<Mapper> action)
+        {
+            // Use the explicit IEnumerator<Mapper> otherwise the exception
+            // is not thrown when calling MoveNext().
+            using (IEnumerator<Mapper> enumerator = Mappers.GetEnumerator())
+            {
+                while (MoveNextMapper(enumerator))
+                {
+                    action(enumerator.Current);
+                }
+            }
+        }
+
+        private bool MoveNextMapper(IEnumerator enumerator)
+        {
+            try
+            {
+                return enumerator.MoveNext();
+            }
+            catch (InvalidOperationException e)
+            {
+                var message =
+@"The mappers were modified during enumeration. Did you accidentally use a parent mapper inside of a scoped mapping block?
+For example:
+
+map.Area<PostsController>(""posts"", posts =>
+{
+    // Wrong - should be using 'posts' instead of 'map'.
+    map.Resources<CommentsController>();
+
+    // Right
+    posts.Resources<CommentsController>();
+});";
+                throw new InvalidMapperConfigurationException(message, e);
             }
         }
 

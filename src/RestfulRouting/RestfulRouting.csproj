@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Actions.cs" />
     <Compile Include="Exceptions\InvalidRestfulMethodException.cs" />
+    <Compile Include="Exceptions\InvalidMapperConfigurationException.cs" />
     <Compile Include="Exceptions\NotRegisteredFormatException.cs" />
     <Compile Include="Filters\RedirectFilterAttribute.cs" />
     <Compile Include="Format\AcceptList.cs" />

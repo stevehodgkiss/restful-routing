@@ -4,6 +4,8 @@ using Machine.Specifications;
 using RestfulRouting.Mappers;
 using RestfulRouting.Spec.TestObjects;
 using System.Linq;
+using System;
+using RestfulRouting.Exceptions;
 
 namespace RestfulRouting.Spec
 {
@@ -75,5 +77,44 @@ namespace RestfulRouting.Spec
                          };
 
         It maps_the_debug_route = () => ((Route)routes.First()).Url.ShouldEqual("debug");
+    }
+
+    public class mapper_area_mixing_scopes : mapper_routeBase
+    {
+        static Exception Exception;
+
+        Because of = () =>
+        {
+            mapper.Area("area", area => mapper.Resources<PostsController>());
+            Exception = Catch.Exception(() => mapper.RegisterRoutes(routes));
+        };
+        
+        It should_throw_exception = () => Exception.ShouldBeOfType<InvalidMapperConfigurationException>();
+    }
+
+    public class mapper_resource_mixing_scopes : mapper_routeBase
+    {
+        static Exception Exception;
+
+        Because of = () =>
+        {
+            mapper.Resource<PostsController>(posts => mapper.Resource<PostsController>());
+            Exception = Catch.Exception(() => mapper.RegisterRoutes(routes));
+        };
+
+        It should_throw_exception = () => Exception.ShouldBeOfType<InvalidMapperConfigurationException>();
+    }
+
+    public class mapper_resources_mixing_scopes : mapper_routeBase
+    {
+        static Exception Exception;
+
+        Because of = () =>
+        {
+            mapper.Resources<PostsController>(posts => mapper.Resources<PostsController>());
+            Exception = Catch.Exception(() => mapper.RegisterRoutes(routes));
+        };
+
+        It should_throw_exception = () => Exception.ShouldBeOfType<InvalidMapperConfigurationException>();
     }
 }
