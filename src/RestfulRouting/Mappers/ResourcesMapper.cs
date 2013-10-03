@@ -62,7 +62,7 @@ namespace RestfulRouting.Mappers
             if (methods.Length == 0)
                 methods = new[] { HttpVerbs.Get };
 
-            return GenerateRoute(ResourcePath + "/{id}/" + resource, ControllerName, action, methods.Select(x => x.ToString().ToUpperInvariant()).ToArray());
+            return GenerateRoute(ResourcePath + "/{" + IdParameterName + "}/" + resource, ControllerName, action, methods.Select(x => x.ToString().ToUpperInvariant()).ToArray());
         }
 
         private Route CollectionRoute(string action, string resource, params HttpVerbs[] methods)
@@ -97,12 +97,13 @@ namespace RestfulRouting.Mappers
 
             if (Mappers.Any())
             {
-                BasePath = Join(ResourcePath, "{" + SingularResourceName + "Id}");
-                var idConstraint = Constraints["id"];
+                string parentIdParameterName = SingularResourceName + Inflector.Capitalize(IdParameterName);
+                BasePath = Join(ResourcePath, "{" + parentIdParameterName + "}");
+                var idConstraint = Constraints[IdParameterName];
                 if (idConstraint != null)
                 {
-                    Constraints.Remove("id");
-                    Constraints.Add(SingularResourceName + "Id", idConstraint);
+                    Constraints.Remove(IdParameterName);
+                    Constraints.Add(parentIdParameterName, idConstraint);
                 }
 
                 AddResourcePath(SingularResourceName);

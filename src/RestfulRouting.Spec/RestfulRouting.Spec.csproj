@@ -82,6 +82,8 @@
     <Compile Include="SpecHelper.cs" />
     <Compile Include="TestObjects\AvatarsController.cs" />
     <Compile Include="TestObjects\CommentsController.cs" />
+    <Compile Include="TestObjects\ReviewsController.cs" />
+    <Compile Include="TestObjects\ProductsController.cs" />
     <Compile Include="TestObjects\LikesController.cs" />
     <Compile Include="TestObjects\PostsController.cs" />
     <Compile Include="TestObjects\SessionsController.cs" />

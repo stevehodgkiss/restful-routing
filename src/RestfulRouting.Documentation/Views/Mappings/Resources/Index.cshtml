@@ -8,6 +8,7 @@
             <li><a href="#basics">Basics</a></li>
             <li><a href="#actions">Actions and Http Methods</a></li>
             <li><a href="#naming">Naming</a></li>
+            <li><a href="#idparameter">Customizing the "id" Parameter</a></li>
             <li><a href="#tweaks">Tweaking Actions</a></li>
             <li><a href="#nest">Nesting Resources</a></li>
         </ul>
@@ -183,7 +184,22 @@
             ...
         }</pre>
 </section>
-
+<section id="idparameter">
+        <h2>Customizing the Id Parameter</h2>
+    <p>By default, the name &quot;id&quot; is used for the resource id parameter in route URL patterns. For example, the URL pattern for the products#show action in <a href="#actions">Actions and HTTP Methods</a> above is &quot;/products/{id}&quot;.</p>
+    <p>In some scenarios, you might want to use a different name for the parameter. Maybe you want the parameter name to match the name of the property used to identify the resource:</p>
+    <pre class="prettyprint linenums">
+public class UsersController: Controller {
+    public ActionResult Show(string username) {
+        ...
+    }
+    ...
+}
+        </pre>
+        <p>You can configure the id parameter name that is used for each resource like this:</p>
+        <pre class="prettyprint">map.Resources&lt;UsersController&gt;(users =&gt; users.IdParameter("username"));</pre>
+        <p>The route added for the users#show action would then have the URL pattern "/users/{username}".</p>
+</section>
 <section id="tweaks">
     <h2>Tweaking Actions</h2>
     <p>Sometimes you might not need all the methods we provide. You may remove actions using the follwing methods:</p>

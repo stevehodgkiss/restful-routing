@@ -10,6 +10,7 @@ namespace RestfulRouting.Mappers
     public interface IResourcesMapperBase : IMapper
     {
         void As(string resourceName);
+        void IdParameter(string idParameterName);
         void Except(params string[] actions);
         void Only(params string[] actions);
         void WithFormatRoutes();
@@ -20,6 +21,7 @@ namespace RestfulRouting.Mappers
     public abstract class ResourcesMapperBase<TController> : Mapper, IResourcesMapperBase where TController : Controller
     {
         protected string ResourceName;
+        protected string IdParameterName = "id";
         protected string ResourcePath;
         protected string ControllerName;
         protected RouteNames Names = new RouteNames();
@@ -41,6 +43,11 @@ namespace RestfulRouting.Mappers
         {
             ResourceName = resourceName;
             CalculatePath();
+        }
+
+        public void IdParameter(string idParameterName)
+        {
+            IdParameterName = idParameterName;
         }
 
         public void Except(params string[] actions)
@@ -154,7 +161,9 @@ namespace RestfulRouting.Mappers
 
         protected virtual string BuildPathFor(string path)
         {
+            string idParameterToken = string.Concat("{", IdParameterName, "}");
             return path.Replace("{resourcePath}", ResourcePath)
+                        .Replace("{id}", idParameterToken)
                         .Replace("{indexName}", ProperCaseUrl(Names.IndexName))
                         .Replace("{showName}", ProperCaseUrl(Names.ShowName))
                         .Replace("{newName}", ProperCaseUrl(Names.NewName))

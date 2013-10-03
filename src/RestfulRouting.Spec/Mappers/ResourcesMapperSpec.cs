@@ -7,6 +7,7 @@ using Machine.Specifications;
 using MvcContrib.TestHelper;
 using RestfulRouting.Mappers;
 using RestfulRouting.Spec.TestObjects;
+using Machine.Specifications.Utility;
 
 namespace RestfulRouting.Spec.Mappers
 {
@@ -42,6 +43,34 @@ namespace RestfulRouting.Spec.Mappers
         It should_generate_destroy = () => OutBoundUrl.Of<PostsController>(x => x.Destroy(1)).ShouldMapToUrl("/posts/1");
     }
 
+    [Behaviors]
+    public class ProductsResource
+    {
+        It should_map_get_show = () => "~/products/prod123".WithMethod(HttpVerbs.Get)
+            .ShouldMapTo<ProductsController>(x => x.Show("prod123"));
+
+        It should_map_get_edit = () => "~/products/prod123/edit".WithMethod(HttpVerbs.Get)
+            .ShouldMapTo<ProductsController>(x => x.Edit("prod123"));
+
+        It should_map_put_update = () => "~/products/prod123".WithMethod(HttpVerbs.Put)
+            .ShouldMapTo<ProductsController>(x => x.Update("prod123"));
+
+        It should_map_delete_destroy = () => "~/products/prod123".WithMethod(HttpVerbs.Delete)
+            .ShouldMapTo<ProductsController>(x => x.Destroy("prod123"));
+
+        It should_generate_show = () => OutBoundUrl.Of<ProductsController>(x => x.Show("prod123"))
+            .ShouldMapToUrl("/products/prod123");
+
+        It should_generate_edit = () => OutBoundUrl.Of<ProductsController>(x => x.Edit("prod123"))
+            .ShouldMapToUrl("/products/prod123/edit");
+
+        It should_generate_update = () => OutBoundUrl.Of<ProductsController>(x => x.Update("prod123"))
+            .ShouldMapToUrl("/products/prod123");
+
+        It should_generate_destroy = () => OutBoundUrl.Of<ProductsController>(x => x.Destroy("prod123"))
+            .ShouldMapToUrl("/products/prod123");
+    }
+
     public class mapping_resources : base_context
     {
         Because of = () => new ResourcesMapper<PostsController>().RegisterRoutes(routes);
@@ -64,6 +93,42 @@ namespace RestfulRouting.Spec.Mappers
                                                       }
                                                   };
     }
+
+    public class mapping_resources_with_custom_id_parameter : base_context
+    {
+        Because of = () => new ResourcesMapper<ProductsController>(products =>
+        {
+            products.IdParameter("code");
+            products.Member(x => x.Get("hello"));
+        }).RegisterRoutes(routes);
+
+        Behaves_like<ProductsResource> a_products_resource;
+
+        It should_use_custom_parameter_in_edit_route_url = () => routes.ForAction("products", "Edit").Url.ShouldEndWith("products/{code}/edit");
+
+        It should_use_custom_parameter_in_show_route_url = () => routes.ForAction("products", "Show").Url.ShouldEndWith("products/{code}");
+
+        It should_use_custom_parameter_in_update_route_url = () => routes.ForAction("products", "Update").Url.ShouldEndWith("products/{code}");
+
+        It should_use_custom_parameter_in_destroy_route_url = () => routes.ForAction("products", "Destroy").Url.ShouldEndWith("products/{code}");
+
+        It should_use_custom_parameter_in_member_route_url = () => routes.ForAction("products", "Hello").Url.ShouldEndWith("products/{code}/hello");
+    }
+
+    public class mapping_resources_with_constraint_on_custom_id_parameter : base_context
+    {
+        Because of = () => new ResourcesMapper<ProductsController>(products =>
+        {
+            products.IdParameter("code");
+            products.Constrain("code", @"[a-z]{3,3}\d{3,3}");
+        }).RegisterRoutes(routes);
+
+        It constrains_the_id = () => "~/products/abc123".WithMethod(HttpVerbs.Get).ShouldMapTo<ProductsController>(x => x.Show("abc123"));
+
+        It should_add_constraint_for_custom_id_parameter = () => routes.ForController("products")
+            .Each(route => route.Constraints["code"].ShouldEqual(@"[a-z]{3,3}\d{3,3}"));
+    }
+
 
     public class mapping_resources_with_collection_route : base_context
     {
@@ -158,6 +223,89 @@ namespace RestfulRouting.Spec.Mappers
         Behaves_like<PostsResource> a_posts_resource;
 
         Behaves_like<NestedCommentsResource> a_nested_comments_resource;
+    }
+
+    [Behaviors]
+    public class NestedReviewsResource
+    {
+        It should_map_products_get_index = () => "~/products/abc123/reviews".WithMethod(HttpVerbs.Get)
+                                                     .ShouldMapTo<ReviewsController>(x => x.Index("abc123")).WithName("product_reviews");
+
+        It should_map_products_get_show = () => "~/products/abc123/reviews/2".WithMethod(HttpVerbs.Get)
+                                                    .ShouldMapTo<ReviewsController>(x => x.Show("abc123", 2)).WithName("product_review");
+
+        It should_map_products_get_new = () => "~/products/abc123/reviews/new".WithMethod(HttpVerbs.Get)
+                                                   .ShouldMapTo<ReviewsController>(x => x.New("abc123")).WithName("new_product_review");
+
+        It should_map_products_product_create = () => "~/products/abc123/reviews".WithMethod(HttpVerbs.Post)
+                                                          .ShouldMapTo<ReviewsController>(x => x.Create("abc123"));
+
+        It should_map_products_get_edit = () => "~/products/abc123/reviews/2/edit".WithMethod(HttpVerbs.Get)
+                                                    .ShouldMapTo<ReviewsController>(x => x.Edit("abc123", 2)).WithName("edit_product_review");
+
+        It should_map_products_put_update = () => "~/products/abc123/reviews/2".WithMethod(HttpVerbs.Put)
+                                                      .ShouldMapTo<ReviewsController>(x => x.Update("abc123", 2));
+
+        It should_map_products_delete_destroy = () => "~/products/abc123/reviews/2".WithMethod(HttpVerbs.Delete)
+                                                          .ShouldMapTo<ReviewsController>(x => x.Destroy("abc123", 2));
+
+
+        It should_generate_index = () => OutBoundUrl.Of<ReviewsController>(x => x.Index("abc123"))
+                                             .ShouldMapToUrl("/products/abc123/reviews");
+
+        It should_generate_show = () => OutBoundUrl.Of<ReviewsController>(x => x.Show("abc123", 3))
+                                            .ShouldMapToUrl("/products/abc123/reviews/3");
+
+        It should_generate_new = () => OutBoundUrl.Of<ReviewsController>(x => x.New("abc123"))
+                                           .ShouldMapToUrl("/products/abc123/reviews/new");
+
+        It should_generate_create = () => OutBoundUrl.Of<ReviewsController>(x => x.Create("abc123"))
+                                              .ShouldMapToUrl("/products/abc123/reviews");
+
+        It should_generate_edit = () => OutBoundUrl.Of<ReviewsController>(x => x.Edit("abc123", 3))
+                                            .ShouldMapToUrl("/products/abc123/reviews/3/edit");
+
+        It should_generate_update = () => OutBoundUrl.Of<ReviewsController>(x => x.Update("abc123", 3))
+                                              .ShouldMapToUrl("/products/abc123/reviews/3");
+
+        It should_generate_destroy = () => OutBoundUrl.Of<ReviewsController>(x => x.Destroy("abc123", 3))
+                                               .ShouldMapToUrl("/products/abc123/reviews/3");
+    }
+
+    public class nested_resources_with_custom_id_parameter_on_parent : base_context
+    {
+        Because of = () => new ResourcesMapper<ProductsController>(products =>
+        {
+            products.IdParameter("code");
+            products.Resources<ReviewsController>();
+        }).RegisterRoutes(routes);
+
+        Behaves_like<ProductsResource> a_products_resource;
+
+        Behaves_like<NestedReviewsResource> a_nested_comments_resource;
+
+        It should_use_custom_id_parameter_to_identify_parent_resource_in_route_urls = () => routes.ForAction("reviews", "Show").Url
+            .ShouldStartWith("products/{productCode}/reviews/");
+
+        It should_use_standard_id_parameter_to_identify_nested_resource_in_route_urls = () => routes.ForAction("reviews", "Show").Url
+            .ShouldEndWith("/reviews/{id}");
+    }
+
+    public class nested_resources_with_custom_id_parameter_and_constraint_on_parent : base_context
+    {
+        Because of = () => new ResourcesMapper<ProductsController>(products =>
+        {
+            products.IdParameter("code");
+            products.Constrain("code", @"[a-z]{3,3}\d{3,3}");
+            products.Resources<ReviewsController>();
+        }).RegisterRoutes(routes);
+
+        It constrains_the_id = () => "~/products/abc123/reviews/1".WithMethod(HttpVerbs.Get).ShouldMapTo<ReviewsController>(x => x.Show("abc123", 1));
+        It should_add_constraint_with_id_parameter_name_on_parent_resource_routes = () => routes.ForController("products")
+            .Each(route => route.Constraints["code"].ShouldEqual(@"[a-z]{3,3}\d{3,3}"));
+
+        It should_add_constraint_with_parent_id_parameter_name_on_nested_resource_routes = () => routes.ForController("reviews")
+            .Each(route => route.Constraints["productCode"].ShouldEqual(@"[a-z]{3,3}\d{3,3}"));
     }
 
     public class deep_nested_resources : base_context
